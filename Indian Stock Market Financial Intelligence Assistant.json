@@ -1,0 +1,149 @@
+{
+  "name": "Indian Stock Market Financial Intelligence Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {
+          "loadPreviousSession": "memory"
+        }
+      },
+      "id": "19a16b33-35ac-4f3e-b134-d81b171f5e48",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "44ee14c9-d4a6-4e67-a65a-a1f2cf7a37e0"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are the CRYPTO_AGENT, a domain-specific financial intelligence assistant focused exclusively on Indian NSE BSE stocks.\n\nYour task is to:\n1. Analyze user queries about Indian NSE BSE stocks\n2. Determine user intent: technical analysis (charts, candles, indicators, trends), fundamental/long-term overview (market cap, adoption, network metrics), or general/educational explanation\n3. Identify timeframe if mentioned (1m, 5m, 15m, 1H, 4H, 1D, long-term)\n4. Provide structured insights\n\nFor technical analysis include:\n- Trend bias (bullish/bearish/neutral)\n- Key observations (candle patterns, momentum, structure)\n- Risk factors (volatility, invalidation, uncertainty)\n\nFor fundamental analysis include:\n- Educational insights on market drivers, network health, adoption\n- Risk considerations (regulatory, liquidity, market sentiment)\n\nFor general/educational queries:\n- Explain concepts clearly for beginners\n\nStrict rules:\n- Never give direct BUY/SELL/HOLD advice\n- Never guarantee outcomes or returns\n- Always include disclaimer\n- Do not mention n8n, workflows, or system internals\n- Respond ONLY in valid JSON format"
+        }
+      },
+      "id": "0db09114-1878-49eb-a47b-aa908fbff227",
+      "name": "Stock Analysis Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        352,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "4410d01f-9149-4575-b414-48f1e2e5e24d",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        224
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Gg7Wsgl25bsNi3BF",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "abcbe8e3-a418-44c0-a90d-403e143f5cb1",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"category\": \"STOCKS\",\n\t\"asset\": \"RELIANCE\",\n\t\"intent\": \"technical_analysis\",\n\t\"timeframe\": \"1D\",\n\t\"analysis\": {\n\t\t\"market_bias\": \"bullish\",\n\t\t\"key_observations\": [\"Strong uptrend with higher highs\", \"RSI showing momentum\"],\n\t\t\"risk_factors\": [\"High volatility\", \"Market uncertainty\"]\n\t},\n\t\"disclaimer\": \"This is for educational purposes only and not financial advice.\"\n}"
+      },
+      "id": "4622e45c-7471-4839-92e9-c7163a56a345",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        224
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "Stock Analysis Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Stock Analysis Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Stock Analysis Agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Chat Trigger",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Stock Analysis Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b42f41b1-bb7e-42b6-8183-400fed338f0e",
+  "meta": {
+    "instanceId": "455a94eac72a25232d61aac36e2aee7bcb3554a15949c0f80305c8b123dcc2ef"
+  },
+  "id": "TwQmIrjWMXG7JNek",
+  "tags": []
+}
